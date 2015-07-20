@@ -1,0 +1,10 @@
+site_name: Cypress
+pages:
+- Intro: index.md
+- Architecture: arch.md
+- Development: dev.md
+- Modeling Environment: web.md
+- Addie: addie.md
+- Data: data.md
+- Simulation: sim.md
+theme: readthedocs
