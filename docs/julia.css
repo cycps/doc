@@ -72,3 +72,12 @@ h1,h2,h3,h4,h5,h6 {
     color: #646464;
 }
 
+.hljs {
+  font-size: 115%;
+  padding: 15px;
+  border: 2px #7F977F solid;
+  border-radius: 5px;
+  white-space:pre;
+}
+
+pre { white-space:pre; }
