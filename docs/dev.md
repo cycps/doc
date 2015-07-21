@@ -94,3 +94,23 @@ complete: 4 passing, 0 failing, 0 errors, 0 skipped, 4 total
 complete: Tests took 181ms
 ```
 All of the source code folders are mounted at `~/.cypress/<project-name>`. Now if you wanted to edit the source of addie/design and see if still passes it's client API tests, you could modify the code on your local machine, rebuild addie/test (see addie docs for how to build, install and test addie code) and see if your modifications preserve the results of the tests.
+
+
+# Testing
+
+Cypress aims to be a well tested engine. It is our view that tests are just as important as the code itself. The core of the Cypress functionality is exposed through the `addie` APIs. Thus the most important tests we have are the `addie` API tests. The goal is that, when developing new features, or fixing bugs, the `addie` API tests can provide developers with a high level of assurance that new code is not breaking existing functionality or that bug fixes are actually fixing bugs. The first step to fixing any bug is developing a reproducing test case.
+
+Our API test are written as [API Blueprint](https://apiblueprint.org) files. The file that we used to run the test above was an API Blueprint file. Lets take a closer look at the [run_dredd_apitests.sh](https://github.com/cycps/addie/blob/master/spec/run_dredd_api_tests.sh) we used in the script earlier.
+
+<script src="http://gist-it.appspot.com/http://github.com/cycps/addie/blob/master/spec/run_dredd_api_tests.sh"></script>
+
+We are using a program called [dredd](https://github.com/apiaryio/dredd) to automate testing the blueprint. More on dredd in a moment. First let's look at the  API Blueprint file [design.md](https://github.com/cycps/addie/blob/master/spec/design.md) that it is using.
+
+<script src="http://gist-it.appspot.com/http://github.com/cycps/addie/blob/master/spec/design.md"></script>
+<script type="text/javascript">
+  $("pre").addClass("linenums");
+</script>
+
+The first thing to notice is that this file is really just GitHub markdown. The important part starts at `Experiment Update` and the partial URL `/design/{xpid}` that is referenced inside the square brackets. This indicates that the test cases to follow are to be evaluated against this address. `xpid` is in brackets because it is a parameter. In this instance of the blueprint we are supplying the default parameter as `xpid=system47`. This parameter can also be supplied by tools at test-time like dredd. Following the `[POST]` directive three request-reply test cases are described in terms of their post content. When dredd is executed over this file it supplies these parameters in the requests and parses responses to ensure they match expectations. This example simply shows creating a computer, updating that computer and then submitting a bad update to `addie` and expecting an error in return.
+
+The final test cases use the `/design/{x}/delete` part of the `addie/design` api to essentially clean up after the test. If cleaning up using the API is for some reason not possible (you should first think about the design and testability of your code) and then use the dredd's hookfile mechanism to execute some cleanup code afterword. We are actually using a 'before-hook' [hookstls.js](https://github.com/cycps/addie/blob/master/spec/hookstls.js) in [run_dredd_apitests.sh](https://github.com/cycps/addie/blob/master/spec/run_dredd_api_tests.sh) to let the node.js runtime (where dredd runs) that we are OK with the insecure development SSL cert that is coming back from `addie`.

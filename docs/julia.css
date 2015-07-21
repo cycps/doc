@@ -81,3 +81,15 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 pre { white-space:pre; }
+
+.gist-data {
+  max-height: 500px;
+  background-color: #ffffff !important;
+  border: 2px #7F977F solid !important;
+  border-radius: 5px;
+}
+
+.gist-file {
+  border: none !important;
+}
+
