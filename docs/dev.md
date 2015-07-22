@@ -64,6 +64,8 @@ Each of these virtual machines has Cypress components installed. In fact when th
 
 To get a feel for how this works, lets launch the addie/design daemon on the `svc` VM and then run some API tests that target addi/design from the `client` VM. You will need two terminal windows for this, each with the CWD in the test/env folder. First let's use Vagrants ssh functionality to bring up a terminal on the `svc` machine. Once the terminal is up we will launch addie/design.
 
+<b><span style="color:red;">Note: this will not work at the moment, I am updating the API, welcome to pre-alpha</span></b>
+
 ```shell
 $ vagrant ssh svc
 Welcome to Ubuntu 15.04 (GNU/Linux 3.19.0-15-generic x86_64)
