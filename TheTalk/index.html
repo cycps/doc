@@ -48,9 +48,26 @@
 					<p>
 						<small>
               <a href="https://isi.edu/~rgoodfel">Ryan Goodfellow</a> / 
-              <a href="mailto:rgoodfel@isi.edu">rgoodfel@isi.edu</a></small>
+              <a href="mailto:rgoodfel@isi.edu">rgoodfel@isi.edu</a>
+            </small>
 					</p>
+
+          <span style="font-size: 18px;">Everything presented here is OSS and available on GitHub</span>
+          <a target="_blank" href="https://github.com/cycps" style="display:block;">
+            <img src="img/ghmark.png" width=30 />
+          </a>
 				</section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ## Overview
+            - Problem Space
+            - Motivation
+            - Demonstration
+            - Architecture
+            - Technical Implementation
+          </script>
+        </section>
 
         <section>
           <h3>Cyber-Physical Networked Energy Systems</h3>
@@ -154,7 +171,6 @@
             <img  src="img/logarch_dev.png" />
           </section>
         </section>
-        <section>
 
         <section data-markdown>
             <script type="text/template">
@@ -163,7 +179,7 @@
               <div style="float:left; width:50%;">
               <h4>Development</h4>
               <ul>
-                <li>Physics Simulation Library</li>
+                <li>Physics Simulation Engine</li>
                 <li>Control Library</li>
                 <li>CPNS Library (goxp)</li>
                 <li>WAN LXC Network Library (libwan)</li>
@@ -183,8 +199,92 @@
               </ul>
               </div>
             </script>
+				</section>
 
-				<section>
+        <section>
+          <section data-markdown>
+              <script type="text/template">
+            ## Physics Simulation Engine
+            - Model and simulate physical systems as **_networked DAE-based components_**.
+            - Built atop [Sundials](https://computation.llnl.gov/casc/sundials/main.html) from LLNL
+            - Built specifically for designing **_network-based control systems_**.
+            - Written in C++ and provides **_modular_** abstractions for DAE based modeling.
+              </script>
+          </section>
+          <section>
+            <h2>High Level Architecture</h2>
+            <img src="img/simarch.png" />
+          </section>
+          <section>
+            <h3>Physical Component Modeling</h3>
+					  <pre class="stretch"><code class="cpp hljs">
+struct Rotor : public Object
+{
+  Var w, tau, theta;
+  realtype H;
+
+  Rotor(string name, realtype H): Object(2, name), H{H} 
+  {
+    label(w,"w");
+    label(tau,"tau");
+    label(theta,"theta");
+  }
+
+  void resid() override
+  {
+    r(0) = d(w) - (tau - H*std::pow(w, 2.0));
+    r(1) = d(theta) - w;
+  }
+};
+					  </code></pre>
+          </section>
+          <section>
+            <h3>Physical System Modeling</h3>
+					  <pre class="stretch"><code class="cpp hljs" data-trim contenteditable>
+struct RotorHouse
+{
+  string name;
+  mech::Rotor r;
+  Actuator a;
+  Sensor s;
+
+  RotorHouse(string name, unsigned long control_tag, string target)
+    : name{name},
+      r{name+".r", 47},
+      a{name+".a", r.tau, {0, 10}, {0, 0.5}, control_tag},
+      s{name+".s", r.w, 120, control_tag, target}
+  { }
+};
+
+int main()
+{
+  RotorHouse a{"a", 1001, "rca"};
+  RotorHouse b{"b", 1002, "rcb"};
+  RotorHouse c{"c", 1003, "rcc"};
+
+  return Sim::get().run(0, 2, 1e-3);
+}
+
+					  </code></pre>
+          </section>
+          <section>
+            <h3>Simulation Runtime</h3>
+            <img height=600 src="img/simruntime.png" />
+          </section>
+        </section>
+
+
+
+
+
+
+
+
+
+
+
+
+        <section>
 					<h2>Pretty Code</h2>
 					<pre><code class="hljs" data-trim contenteditable>
 function linkify( selector ) {
